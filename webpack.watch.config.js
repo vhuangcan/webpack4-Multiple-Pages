@@ -1,11 +1,11 @@
-const path = require('path');
+const path = require('path')
 const config = require('./path.config')
-const webpack = require('webpack');
-const merge = require('webpack-merge');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpackConfig = require("./webpack.base.config");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const webpack = require('webpack')
+const merge = require('webpack-merge')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpackConfig = require("./webpack.base.config")
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 
 const mergedConfig = merge(webpackConfig, {
 
@@ -78,10 +78,23 @@ const mergedConfig = merge(webpackConfig, {
       }
     ])
   ]
-});
+})
+
+delHotReload()
+
+// watch之前删除热重载代码
+function delHotReload() {
+  const value = Object.values(webpackConfig.entry)
+  value.forEach(v => {
+    fs.readFile(v, 'UTF8', (err, data) => {
+      let newData = data.replace(/if \(module.hot\) \{module.hot.accept\(\)\}/g, '')
+      fs.writeFileSync(v, newData);
+    })
+  })
+}
 
 function resolve(src) {
-  return path.join(__dirname, '..', src);
+  return path.join(__dirname, '..', src)
 }
 
 module.exports = mergedConfig
